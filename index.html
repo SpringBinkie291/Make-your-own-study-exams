@@ -1,0 +1,719 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Nursing Study Lab</title>
+  <meta name="description" content="A private, browser-based nursing study guide and quiz generator for PDF and PPTX files." />
+  <style>
+    :root{
+      --bg:#f4f7fb;--panel:rgba(255,255,255,.92);--text:#132033;--muted:#64748b;--line:#dce5ef;
+      --brand:#536dfe;--brand2:#3547c8;--accent:#edf0ff;--teal:#13a6a6;--mint:#e9fbf8;
+      --good:#177245;--bad:#b42318;--warn:#8a4b0f;--shadow:0 22px 60px rgba(39,55,92,.10);--radius:22px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:
+      radial-gradient(circle at 10% 0%,rgba(83,109,254,.12),transparent 26rem),
+      radial-gradient(circle at 96% 14%,rgba(19,166,166,.11),transparent 25rem),var(--bg);color:var(--text);line-height:1.55}
+    body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.26;background-image:linear-gradient(rgba(83,109,254,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(83,109,254,.035) 1px,transparent 1px);background-size:34px 34px;mask-image:linear-gradient(to bottom,#000,transparent 65%)}
+    .wrap{max-width:1200px;margin:auto;padding:30px 18px 70px;position:relative}
+    header{position:relative;overflow:hidden;display:grid;grid-template-columns:1.25fr .75fr;gap:28px;align-items:center;margin-bottom:22px;padding:34px;border:1px solid rgba(255,255,255,.8);border-radius:28px;background:linear-gradient(135deg,rgba(255,255,255,.94),rgba(245,248,255,.88));box-shadow:var(--shadow);backdrop-filter:blur(12px)}
+    header:after{content:"+";position:absolute;right:48px;top:18px;font-size:8rem;line-height:1;font-weight:200;color:rgba(83,109,254,.07);transform:rotate(12deg)}
+    .hero-art{min-height:190px;position:relative;display:grid;place-items:center}
+    .orb{width:180px;height:180px;border-radius:44% 56% 54% 46% / 46% 45% 55% 54%;background:linear-gradient(145deg,#637bff,#14b4ad);box-shadow:0 30px 70px rgba(83,109,254,.25);animation:float 7s ease-in-out infinite;position:relative}
+    .orb:before{content:"✚";position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:4.8rem;font-weight:300;text-shadow:0 12px 30px rgba(0,0,0,.08)}
+    .pulse{position:absolute;width:250px;height:80px;border-bottom:3px solid rgba(255,255,255,.85);clip-path:polygon(0 63%,28% 63%,34% 48%,41% 76%,49% 19%,58% 66%,65% 54%,72% 63%,100% 63%,100% 69%,71% 69%,65% 61%,58% 73%,50% 39%,43% 92%,33% 61%,29% 69%,0 69%);background:rgba(255,255,255,.82)}
+    @keyframes float{50%{transform:translateY(-8px) rotate(2deg)}}
+    h1{font-size:clamp(2.05rem,4.6vw,3.65rem);line-height:1.02;letter-spacing:-.045em;margin:8px 0 13px;max-width:760px}
+    h2{font-size:1.22rem;letter-spacing:-.015em;margin:0 0 12px} h3{margin:17px 0 8px}p{margin:8px 0}.muted{color:var(--muted)}
+    .eyebrow{font-size:.76rem;letter-spacing:.12em;text-transform:uppercase;font-weight:850;color:var(--brand2)}
+    .badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:var(--accent);color:var(--brand2);font-size:.78rem;font-weight:800}
+    .hero-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.hero-pills span{padding:7px 10px;border:1px solid #dfe5fb;background:#fff;border-radius:999px;font-size:.78rem;color:#46546a;font-weight:700}
+    .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}.panel{background:var(--panel);border:1px solid rgba(218,227,239,.9);border-radius:var(--radius);padding:22px;box-shadow:0 12px 35px rgba(39,55,92,.07);backdrop-filter:blur(8px)}
+    @media(max-width:880px){header{grid-template-columns:1fr;padding:25px}.hero-art{display:none}.grid{grid-template-columns:1fr}}
+    .stepnum{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:9px;background:linear-gradient(135deg,var(--brand),#7788ff);color:#fff;font-size:.82rem;margin-right:7px;box-shadow:0 7px 18px rgba(83,109,254,.22)}
+    .drop{border:1.5px dashed #b9c6da;border-radius:18px;padding:30px 18px;text-align:center;background:linear-gradient(180deg,#fbfcff,#f7f9fd);transition:.18s}.drop:hover,.drop.drag{border-color:var(--brand);background:#f3f5ff;box-shadow:inset 0 0 0 1px rgba(83,109,254,.08)}.drop input{display:none}
+    .upload-icon{width:52px;height:52px;margin:auto auto 8px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(145deg,var(--accent),var(--mint));font-size:1.55rem}
+    button,.btn{appearance:none;border:0;border-radius:12px;padding:11px 15px;font-weight:780;cursor:pointer;background:linear-gradient(135deg,var(--brand),#6f81ff);color:#fff;transition:.16s;display:inline-flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 7px 18px rgba(83,109,254,.18)}
+    button:hover,.btn:hover{transform:translateY(-1px);filter:saturate(1.07)}button.secondary{background:#f3f6fa;color:#253247;border:1px solid var(--line);box-shadow:none}button.secondary:hover{background:#eaf0f6}button.ghost{background:transparent;color:var(--brand);border:1px solid #cfd7ff;box-shadow:none}
+    button:disabled{opacity:.5;cursor:not-allowed;transform:none}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+    .status{margin-top:12px;padding:10px 12px;border-radius:11px;background:#f3f6fa;color:#48576b;font-size:.9rem}.status.good{background:#ecfdf5;color:var(--good)}.status.bad{background:#fff1f0;color:var(--bad)}
+    textarea,input[type="number"],select,input[type="text"]{width:100%;border:1px solid #cbd7e6;border-radius:11px;background:rgba(255,255,255,.95);padding:10px 11px;color:var(--text);font:inherit;outline:none;transition:.15s}textarea:focus,input:focus,select:focus{border-color:#8fa0ff;box-shadow:0 0 0 3px rgba(83,109,254,.10)}textarea{min-height:180px;resize:vertical}
+    label{font-size:.88rem;font-weight:760;display:block;margin:10px 0 6px}.row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}@media(max-width:560px){.row{grid-template-columns:1fr}}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:19px 0 12px;padding:5px;background:rgba(232,237,245,.75);border-radius:14px;width:max-content;max-width:100%}.tab{background:transparent;color:#526174;box-shadow:none;padding:9px 13px}.tab.active{background:#fff;color:var(--brand2);box-shadow:0 4px 12px rgba(39,55,92,.09)}.view{display:none}.view.active{display:block}
+    .study-section{border-top:1px solid var(--line);padding:14px 0}.study-section:first-child{border-top:0}.study-section ul{padding-left:20px}.keynum{font-weight:850;color:var(--brand2)}
+    .q{border:1px solid #dce4f0;border-radius:17px;padding:18px;margin:14px 0;background:linear-gradient(180deg,#fff,#fcfdff);box-shadow:0 5px 18px rgba(39,55,92,.045)}.qhead{font-weight:820;margin-bottom:12px;line-height:1.45}.qmeta{font-size:.74rem;color:#78869a;margin-bottom:8px;font-weight:750;text-transform:uppercase;letter-spacing:.055em}.option{display:flex;gap:10px;align-items:flex-start;padding:10px 11px;border:1px solid transparent;border-radius:11px;margin:4px 0;transition:.12s}.option:hover{background:#f6f8ff;border-color:#e3e8ff}.option input{margin-top:4px;accent-color:var(--brand)}.feedback{margin-top:11px;padding:11px 12px;border-radius:11px;font-size:.91rem}.correct{background:#ecfdf5;color:var(--good)}.incorrect{background:#fff1f0;color:var(--bad)}.rationale{margin-top:8px;padding-top:8px;border-top:1px solid currentColor;opacity:.94}.check-answer{margin-top:12px;padding:8px 12px;font-size:.84rem;box-shadow:none}
+    .score{font-weight:850;font-size:1.08rem;margin-top:12px}.tiny{font-size:.8rem}.notice{border:1px solid #f5dfaf;background:linear-gradient(90deg,#fffaf0,#fffdf8);padding:12px 14px;border-radius:13px;color:#704312}.footer{margin-top:23px;color:var(--muted);font-size:.82rem}
+    details{border:1px solid var(--line);border-radius:13px;padding:10px 12px;margin-top:12px;background:#fbfcfe}summary{cursor:pointer;font-weight:800}code{background:#eef2f6;padding:2px 5px;border-radius:5px}hr{border:0;border-top:1px solid var(--line);margin:20px 0}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow">Nursing Study Lab · Local-first study tools</div>
+      <h1>Turn class material into a sharper study session.</h1>
+      <p class="muted">Upload a PDF or PPTX, organize your notes, then generate cleaner practice questions from complete concepts — not random slide fragments.</p>
+      <div class="hero-pills"><span>PDF + PPTX</span><span>Multiple choice</span><span>Select all that apply</span><span>Private in-browser processing</span></div>
+    </div>
+    <div class="hero-art" aria-hidden="true"><div class="orb"><div class="pulse"></div></div></div>
+  </header>
+
+  <div class="notice"><strong>Clinical note:</strong> This tool helps you study your own course material. Generated questions can be imperfect. Always verify medication doses, ranges, interventions, and clinical guidance against your instructor, textbook, and current policies.</div>
+
+  <div class="grid" style="margin-top:18px">
+    <section class="panel">
+      <h2><span class="stepnum">1</span>Add study material</h2>
+      <div id="drop" class="drop">
+        <div class="upload-icon">🩺</div>
+        <p><strong>Drop a PDF or PPTX here</strong></p>
+        <p class="muted tiny">Also accepts .txt. Legacy .ppt files should be saved as .pptx first.</p>
+        <label for="file" class="btn" style="display:inline-flex;margin:8px auto 0">Choose file</label>
+        <input id="file" type="file" accept=".pdf,.pptx,.txt,text/plain,application/pdf,application/vnd.openxmlformats-officedocument.presentationml.presentation" />
+      </div>
+      <div id="status" class="status">No file loaded.</div>
+      <label for="source">Extracted / pasted text</label>
+      <textarea id="source" placeholder="Upload a file, or paste class notes here..."></textarea>
+      <div class="actions">
+        <button id="buildGuide">Build study guide</button>
+        <button id="clear" class="secondary">Clear</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2><span class="stepnum">2</span>Build a practice test</h2>
+      <div class="row">
+        <div><label for="count">Questions</label><input id="count" type="number" min="3" max="50" value="10" /></div>
+        <div><label for="type">Question type</label><select id="type"><option value="mixed">Mixed</option><option value="mcq">Multiple choice</option><option value="sata">Select all that apply</option><option value="tf">True / False</option></select></div>
+      </div>
+      <div class="row">
+        <div><label for="focus">Focus</label><select id="focus"><option value="all">All material</option><option value="numbers">Labs, doses & numbers</option><option value="terms">Definitions & concepts</option></select></div>
+        <div><label for="shuffle">Answer order</label><select id="shuffle"><option value="yes">Shuffle</option><option value="no">Keep generated order</option></select></div>
+      </div>
+      <label for="customFocus">Optional topic filter</label>
+      <input id="customFocus" type="text" placeholder="e.g., heart failure, insulin, respiratory" />
+      <div class="actions"><button id="makeQuiz" type="button">Generate test</button><button id="newVersion" type="button" class="secondary">New version</button></div>
+      <div id="quizStatus" class="status">Add study material first.</div>
+      <details>
+        <summary>How question generation works</summary>
+        <p class="muted tiny">V14 works without an AI API key and now rejects subjectless/context-dependent bullets. It filters slide/page labels, copyright/attribution text, URLs, answer-choice fragments, malformed question text, and incomplete statements before anything can become a quiz fact. True/False requires a clean declarative or numeric fact, SATA requires a real list, and MCQ distractors are now restricted to the same answer type/category rather than unrelated facts. Each question includes a check-answer rationale tied to the source statement. It is still rule-based rather than true clinical AI, so verify important clinical content.</p>
+      </details>
+    </section>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="guide">Study guide</button>
+    <button class="tab" data-tab="quiz">Practice test</button>
+    <button class="tab" data-tab="raw">Clean text</button>
+  </div>
+
+  <section id="guide" class="panel view active"><h2>Study guide</h2><div id="guideOut" class="muted">Your generated study guide will appear here.</div></section>
+  <section id="quiz" class="panel view"><h2>Practice test</h2><div id="quizOut" class="muted">Your generated questions will appear here.</div><div class="actions"><button id="grade" type="button" style="display:none">Grade test</button><button id="resetQuiz" type="button" class="secondary" style="display:none">Reset answers</button></div><div id="score"></div></section>
+  <section id="raw" class="panel view"><h2>Clean text</h2><div class="actions"><button id="copyText" class="secondary">Copy text</button><button id="downloadNotes" class="secondary">Download .txt</button></div><pre id="rawOut" style="white-space:pre-wrap;word-wrap:break-word;font:inherit"></pre></section>
+
+  <p class="footer">Everything happens locally in your browser except loading the PDF/PPTX parsing libraries from a public CDN. For fully offline use, download those libraries into your repository and update the script paths.</p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+if(window.pdfjsLib){pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';}
+
+const $=id=>document.getElementById(id);
+const state={text:'',sections:[],facts:[],quiz:[],seed:Date.now()};
+const escapeHTML=s=>s.replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+const clean=s=>s.replace(/\u0000/g,' ').replace(/[ \t]+/g,' ').replace(/\n{3,}/g,'\n\n').trim();
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const uniq=a=>[...new Set(a.map(x=>x.trim()).filter(Boolean))];
+
+function setStatus(msg,kind=''){$('status').className='status '+kind;$('status').textContent=msg}
+function setQuizStatus(msg,kind=''){$('quizStatus').className='status '+kind;$('quizStatus').textContent=msg}
+window.addEventListener('error',e=>{console.error(e.error||e.message);const box=$('quizStatus');if(box&&/pdfjsLib|JSZip|generate|quiz|question/i.test(String(e.message||'')))setQuizStatus('A browser error occurred: '+String(e.message||'Unknown error'),'bad')});
+function activateTab(id){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id))}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>activateTab(b.dataset.tab));
+
+async function parsePDF(file){
+  if(!window.pdfjsLib) throw new Error('The PDF reader library did not load. Refresh the page or paste the extracted text into the Study material box.');
+  const data=new Uint8Array(await file.arrayBuffer());
+  const pdf=await pdfjsLib.getDocument({data}).promise; let parts=[];
+  for(let i=1;i<=pdf.numPages;i++){
+    const page=await pdf.getPage(i); const content=await page.getTextContent();
+    const lines=[]; let lastY=null,row=[];
+    for(const item of content.items){const y=Math.round(item.transform[5]);if(lastY!==null&&Math.abs(y-lastY)>4){lines.push(row.join(' '));row=[]}row.push(item.str);lastY=y}
+    if(row.length)lines.push(row.join(' ')); parts.push(`PAGE ${i}\n${lines.join('\n')}`)
+    setStatus(`Reading PDF page ${i} of ${pdf.numPages}…`)
+  }
+  return clean(parts.join('\n\n'));
+}
+
+function xmlText(xml){
+  const doc=new DOMParser().parseFromString(xml,'application/xml');
+  const paras=[...doc.getElementsByTagNameNS('*','p')];
+  if(paras.length){
+    return paras.map(p=>[...p.getElementsByTagNameNS('*','t')].map(n=>n.textContent).join(' ').replace(/\s+/g,' ').trim()).filter(Boolean).join('\n');
+  }
+  return [...doc.getElementsByTagNameNS('*','t')].map(n=>n.textContent).join(' ');
+}
+async function parsePPTX(file){
+  if(!window.JSZip) throw new Error('The PowerPoint reader library did not load. Refresh the page or paste the extracted text into the Study material box.');
+  const zip=await JSZip.loadAsync(await file.arrayBuffer());
+  const names=Object.keys(zip.files).filter(n=>/^ppt\/slides\/slide\d+\.xml$/.test(n)).sort((a,b)=>+a.match(/slide(\d+)/)[1]-+b.match(/slide(\d+)/)[1]);
+  let out=[];
+  for(let i=0;i<names.length;i++){const xml=await zip.files[names[i]].async('text');out.push(`SLIDE ${i+1}\n${xmlText(xml)}`);setStatus(`Reading slide ${i+1} of ${names.length}…`)}
+  return clean(out.join('\n\n'));
+}
+
+async function loadFile(file){
+  try{
+    setStatus(`Opening ${file.name}…`);
+    let text=''; const name=file.name.toLowerCase();
+    if(name.endsWith('.pdf')) text=await parsePDF(file);
+    else if(name.endsWith('.pptx')) text=await parsePPTX(file);
+    else if(name.endsWith('.txt')) text=await file.text();
+    else throw new Error('Unsupported file type. Use PDF, PPTX, or TXT.');
+    if(!text.trim()) throw new Error('No readable text was found. Scanned/image-only PDFs may need OCR before using this site.');
+    $('source').value=text;state.text=text;analyze();renderRaw();setStatus(`Loaded ${file.name} — ${text.split(/\s+/).length.toLocaleString()} words.`,'good');setQuizStatus('Material is ready. Choose your test settings.','good');
+  }catch(e){console.error(e);setStatus(e.message||'Could not read this file.','bad')}
+}
+$('file').onchange=e=>e.target.files[0]&&loadFile(e.target.files[0]);
+const drop=$('drop');['dragenter','dragover'].forEach(x=>drop.addEventListener(x,e=>{e.preventDefault();drop.classList.add('drag')}));['dragleave','drop'].forEach(x=>drop.addEventListener(x,e=>{e.preventDefault();drop.classList.remove('drag')}));drop.addEventListener('drop',e=>e.dataTransfer.files[0]&&loadFile(e.dataTransfer.files[0]));
+
+function isPageMarker(line){return /^(PAGE|SLIDE)\s+\d+$/i.test(line.trim())}
+function tidyLine(line){return line.replace(/^[\s•●▪◦‣–—-]+/,'').replace(/\s+/g,' ').trim()}
+function isNoiseLine(line){
+  const s=tidyLine(line);
+  if(!s)return true;
+  if(/\b(?:unknown author|licensed under|creative commons|copyright|all rights reserved|image by|photo by|illustration by|adapted from|retrieved from|attribution|pixabay|unsplash|shutterstock)\b/i.test(s))return true;
+  if(/(?:https?:\/\/|www\.|\.com\b|\.org\b|\.edu\b)/i.test(s))return true;
+  if(/[©®™]/.test(s))return true;
+  if(/\b(?:source|references?|bibliography)\s*:/i.test(s))return true;
+  if(/^(?:answer key|answers?|correct answers?|quiz answers?|rationales?|explanations?|practice questions?|knowledge check|quick quiz)\s*:?[–—-]?\s*$/i.test(s))return true;
+  if(/^(?:correct answer|answer|rationale|why it is correct|why it is wrong)\s*:/i.test(s))return true;
+  if(/\?/.test(s))return true; // do not learn from slide quiz prompts or malformed question fragments
+  if(/\b[a-z]\.(?:\s|$)/i.test(s)&&s.split(/\s+/).length<16)return true; // answer-choice fragments such as "e. administration..."
+  if(/\b(?:undernot|authorlicensed|teachingfatigue|painweight)\b/i.test(s))return true;
+  return false;
+}
+function isExcludedSectionHeading(line){
+  const s=tidyLine(line).replace(/:$/,'').trim();
+  return /^(?:answer key|answers?|correct answers?|quiz answers?|rationales?|explanations?|practice questions?|knowledge check|quick quiz|review questions?)$/i.test(s);
+}
+function isHeading(line){
+  const s=tidyLine(line); if(!s||s.length>82||isPageMarker(s)||isNoiseLine(s))return false;
+  const words=s.split(/\s+/); if(words.length>11)return false;
+  if(s.endsWith(':'))return true;
+  if(/^[A-Z0-9 &/(),:'-]{4,}$/.test(s)&&/[A-Z]/.test(s))return true;
+  return words.length<=8 && !/[.!?]$/.test(s) && /^[A-Z][A-Za-z0-9 /&(),+'-]+$/.test(s);
+}
+function sentencePieces(text){
+  const s=tidyLine(text); if(!s||isNoiseLine(s))return[];
+  return s.split(/(?<=[.!])\s+(?=[A-Z0-9])/).map(tidyLine).filter(x=>x&&!isNoiseLine(x))
+}
+function looksIncomplete(s){
+  s=tidyLine(s); const words=s.split(/\s+/);
+  if(isNoiseLine(s))return true;
+  if(s.length<28||s.length>280||words.length<6)return true;
+  if(isPageMarker(s)||/\b(?:slide|page)\s*\d+\b/i.test(s))return true;
+  if(/^(and|or|but|with|without|because|therefore|also|then|which|that|such as|including)\b/i.test(s))return true;
+  if(/[,:;\-–—]$/.test(s))return true;
+  if(/\b(?:the|a|an|and|or|of|to|for|with|by|in|on|at|from|as)$/i.test(s))return true;
+  if((s.match(/[,:;]/g)||[]).length>7)return true;
+  if((s.match(/\//g)||[]).length>3)return true;
+  return false;
+}
+function hasExplicitSubject(s){
+  s=tidyLine(s);
+  // Context-dependent bullets are not standalone facts. They need a named subject before the predicate.
+  if(/^(?:can|may|might|could|should|must|will|would|is|are|was|were|has|have|had|causes?|results?|leads?|requires?|includes?|increases?|decreases?|prevents?|treats?|monitor|assess|administer|give|avoid|found|seen|noted|characterized|associated|treated|managed|diagnosed)\b/i.test(s))return false;
+  if(/^(?:signs?|symptoms?|manifestations?|findings?|complications?|treatment|management|interventions?|nursing interventions?|priority interventions?|teaching|diagnosis|screening|risk factors?)\s*[:.-]?\s*$/i.test(s))return false;
+  const rel=relationPair(s);
+  if(rel){
+    const subj=tidyLine(rel.subject);
+    if(subj.split(/\s+/).length<1||subj.length<2)return false;
+    if(/^(?:this|that|these|those|it|they|he|she|condition|disease|disorder|patient|client|infant|newborn|child|adult|finding|symptom|sign|treatment|medication)$/i.test(subj))return false;
+    if(/^(?:can|may|should|must|is|are|was|were|has|have|found|seen|treated|managed)\b/i.test(subj))return false;
+  }
+  return true;
+}
+function isDeclarativeFact(s){
+  if(looksIncomplete(s)||!hasExplicitSubject(s))return false;
+  if(!/[A-Za-z]/.test(s))return false;
+  if(/\b(?:is|are|was|were|causes?|leads? to|results? in|increases?|decreases?|indicates?|requires?|prevents?|treats?|used for|administered|monitor|assess|characterized by|includes?|signs?|symptoms?|risk|contraindicated|priority|should|must|may|can)\b/i.test(s))return true;
+  if(/\b\d+(?:\.\d+)?\s*(?:mg|mcg|g|mL|L|mmHg|bpm|%|mEq|mmol|mg\/dL|mL\/hr|hours?|minutes?|days?|weeks?|°[CF])\b/i.test(s))return true;
+  return false;
+}
+function factScore(s){
+  if(looksIncomplete(s)||!isDeclarativeFact(s))return -10;
+  let score=0;
+  const w=s.split(/\s+/).length;
+  if(w>=7&&w<=28)score+=3; else if(w<=40)score+=1;
+  if(/\b(is|are|causes?|leads? to|results? in|increases?|decreases?|indicates?|requires?|prevents?|treats?|used for|administered|monitor|assess|characterized by|includes?|signs?|symptoms?|risk|contraindicated|priority)\b/i.test(s))score+=3;
+  if(/\b\d+(?:\.\d+)?\s*(?:mg|mcg|g|mL|L|mmHg|bpm|%|mEq|mmol|mg\/dL|mL\/hr|hours?|minutes?|days?|weeks?|°[CF])\b/i.test(s))score+=2;
+  if(definitionPair(s))score+=2;
+  if(listItems(s).length>=2)score+=2;
+  if(/[.!]$/.test(s))score+=1;
+  return score;
+}
+function analyze(){
+  state.text=clean($('source').value); const raw=state.text.split('\n').map(x=>x.trim()).filter(Boolean);
+  let sections=[],cur={title:'General notes',items:[]},pendingMarker='',skipSection=false;
+  for(let i=0;i<raw.length;i++){
+    const line=tidyLine(raw[i]); if(!line)continue;
+    if(isPageMarker(line)){pendingMarker=line;continue}
+    // Treat answer keys, rationales, review-question sections, and similar material as
+    // non-study content. Skip the entire section until the next genuine heading.
+    if(isExcludedSectionHeading(line)){
+      if(cur.items.length)sections.push(cur);
+      cur={title:'General notes',items:[]}; skipSection=true; pendingMarker=''; continue;
+    }
+    if(isHeading(line)){
+      if(cur.items.length)sections.push(cur);
+      cur={title:line.replace(/:$/,''),items:[],marker:pendingMarker}; pendingMarker=''; skipSection=false; continue;
+    }
+    if(skipSection||isNoiseLine(line))continue;
+    const bits=sentencePieces(line);
+    cur.items.push(...bits);
+  }
+  if(cur.items.length)sections.push(cur);
+  sections=sections.map(s=>({...s,items:uniq(s.items.map(tidyLine)).filter(x=>x.length>12&&!isPageMarker(x)&&!isNoiseLine(x))}))
+    .filter(s=>s.items.length&&!isExcludedSectionHeading(s.title));
+  if(!sections.length)sections=[{title:'Study material',items:sentencePieces(state.text).filter(x=>!isNoiseLine(x))}];
+  state.sections=sections;
+  state.facts=sections.flatMap((s,si)=>s.items.map(x=>({
+    text:x,section:/^(General notes|Study material)$/i.test(s.title)?'Course material':s.title,si,score:factScore(x),
+    numeric:/\b\d+(?:\.\d+)?\s*(?:-|–|to)?\s*\d*(?:\.\d+)?\s*(?:mg|mcg|g|mL|L|mmHg|bpm|%|mEq|mmol|mg\/dL|mL\/hr|hours?|minutes?|days?|weeks?|°[CF])?\b/i.test(x),
+    definition:/\b(is|are|means|refers to|defined as|characterized by)\b/i.test(x)
+  }))).filter(f=>f.score>=3&&!isNoiseLine(f.text)&&!isExcludedSectionHeading(f.section));
+  return state;
+}
+function renderRaw(){$('rawOut').textContent=state.text}
+
+function highlightNumbers(s){return escapeHTML(s).replace(/\b(\d+(?:\.\d+)?(?:\s*(?:-|–|to)\s*\d+(?:\.\d+)?)?\s*(?:mg|mcg|g|mL|L|mmHg|bpm|%|mEq|mmol|mg\/dL|mL\/hr|hours?|mins?|minutes?|days?|weeks?|°[CF])?)\b/gi,'<span class="keynum">$1</span>')}
+function buildGuide(){
+  analyze();renderRaw(); if(!state.text){$('guideOut').innerHTML='<p class="muted">Add study material first.</p>';return}
+  let html='';
+  for(const s of state.sections){
+    const items=s.items.filter(x=>factScore(x)>=0).slice(0,18); if(!items.length)continue;
+    const title=/^(General notes|Study material)$/i.test(s.title)?'Course material':s.title;
+    html+=`<div class="study-section"><h3>${escapeHTML(title)}</h3><ul>${items.map(x=>`<li>${highlightNumbers(x)}</li>`).join('')}</ul></div>`;
+  }
+  const nums=state.facts.filter(f=>f.numeric).slice(0,18);
+  if(nums.length)html+=`<div class="study-section"><h3>Numbers & ranges to verify / memorize</h3><ul>${nums.map(f=>`<li>${highlightNumbers(f.text)}</li>`).join('')}</ul></div>`;
+  $('guideOut').innerHTML=html;activateTab('guide');setQuizStatus('Study guide built. High-quality facts are ready for testing.','good')
+}
+$('buildGuide').onclick=buildGuide;
+
+function topicFilteredFacts(){
+  let facts=state.facts.filter(f=>f.score>=3);const focus=$('focus').value,topic=$('customFocus').value.trim().toLowerCase();
+  if(focus==='numbers')facts=facts.filter(f=>f.numeric);if(focus==='terms')facts=facts.filter(f=>f.definition||definitionPair(f.text));
+  if(topic){const hit=facts.filter(f=>(f.section+' '+f.text).toLowerCase().includes(topic));if(hit.length>=2)facts=hit}
+  return facts;
+}
+function definitionPair(text){
+  let m=text.match(/^(.{2,72}?)\s+(?:is|are|means|refers to|is defined as|are defined as)\s+(.{8,220})[.]?$/i);if(m)return {term:tidyLine(m[1]),def:tidyLine(m[2]).replace(/[.]$/,'')};
+  m=text.match(/^(.{2,72}?):\s+(.{8,220})$/);return m?{term:tidyLine(m[1]),def:tidyLine(m[2]).replace(/[.]$/,'')}:null;
+}
+function relationPair(text){
+  const m=text.match(/^(.{2,88}?)\s+(is|are|causes?|leads? to|results? in|increases?|decreases?|indicates?|requires?|prevents?|treats?|can cause|may cause|can result in|may result in|should be|must be|is used for|are used for)\s+(.{8,210})[.]?$/i);
+  if(!m)return null;
+  const subject=tidyLine(m[1]);
+  if(/^(?:can|may|might|could|should|must|is|are|was|were|has|have|found|seen|treated|managed|associated|characterized)\b/i.test(subject))return null;
+  if(/^(?:this|that|these|those|it|they|condition|disease|disorder|patient|client|finding|symptom|sign)$/i.test(subject))return null;
+  return {subject,verb:m[2],predicate:tidyLine(m[3]).replace(/[.]$/,'')};
+}
+function listItems(text){
+  const cue=text.match(/(?:include|includes|including|such as|characterized by|signs (?:are|include)|symptoms (?:are|include)|manifestations (?:are|include))\s+(.+)/i);if(!cue)return[];
+  return uniq(cue[1].replace(/[.;]$/,'').split(/,|;|\band\b/).map(tidyLine).filter(x=>{
+    if(x.length<3||x.length>95||isNoiseLine(x))return false;
+    if(/^(?:and|or|with|without|because|therefore|also|then|which|that)$/i.test(x))return false;
+    return /[A-Za-z]{2}/.test(x);
+  }))
+}
+function meaningfulSection(section){
+  const s=tidyLine(section||'');
+  return s&&!/^(?:course material|general notes|study material|overview|introduction|objectives?|quick quiz|review|answer key|answers?|rationales?|explanations?|practice questions?|knowledge check)$/i.test(s)&&s.length>=3&&s.length<=90&&!isNoiseLine(s);
+}
+function cleanFullFacts(facts){return facts.filter(x=>x.score>=3&&isDeclarativeFact(x.text)&&!isNoiseLine(x.text)&&x.text.length>=28&&x.text.length<=210)}
+function sectionFacts(facts,section){return cleanFullFacts(facts).filter(x=>x.section===section)}
+function otherSectionFacts(facts,section){return cleanFullFacts(facts).filter(x=>x.section!==section)}
+function listSubject(text,fallback){
+  const m=text.match(/^(.{2,90}?)\s+(?:include|includes|including|are characterized by|is characterized by|signs (?:are|include)|symptoms (?:are|include)|manifestations (?:are|include))\s+(.+)/i);
+  if(m)return tidyLine(m[1]).replace(/^(signs|symptoms|manifestations) of /i,'$1 of ');
+  return fallback;
+}
+function extractNumbers(text){return [...text.matchAll(/\b\d+(?:\.\d+)?(?:\s*(?:-|–|to)\s*\d+(?:\.\d+)?)?\s*(?:mg|mcg|g|mL|L|mmHg|bpm|%|mEq|mmol|mg\/dL|mL\/hr|hours?|minutes?|days?|weeks?|°[CF])\b/gi)].map(m=>m[0])}
+function verbFamily(v){
+  v=(v||'').toLowerCase();
+  if(/cause|lead|result/.test(v))return 'outcome';
+  if(/indicat|characterized|is|are/.test(v))return 'description';
+  if(/require|should|must/.test(v))return 'management';
+  if(/prevent/.test(v))return 'prevention';
+  if(/treat|used for/.test(v))return 'treatment';
+  if(/increase|decrease/.test(v))return 'effect';
+  return v;
+}
+function answerLeaksIntoStem(stem,answer){
+  const norm=s=>String(s||'')
+    .toLowerCase()
+    .replace(/[“”‘’'\".,:;!?()\[\]{}\-_\/]/g,' ')
+    .replace(/\s+/g,' ')
+    .trim();
+  const st=norm(stem),ans=norm(answer);
+  if(!st||!ans)return false;
+  // Exact answer phrase appearing in the stem is a direct giveaway.
+  if(ans.length>=3&&st.includes(ans))return true;
+  // For multi-word concept names, reject stems that contain nearly all meaningful
+  // answer words even if punctuation/wording differs slightly.
+  const stop=new Set(['the','a','an','of','and','or','to','in','on','for','with','without','is','are','was','were','be','by','from','as','at']);
+  const aw=ans.split(' ').filter(w=>w.length>2&&!stop.has(w));
+  if(aw.length<2)return false;
+  const sw=new Set(st.split(' '));
+  const hits=aw.filter(w=>sw.has(w)).length;
+  return hits===aw.length || (aw.length>=3 && hits/aw.length>=0.8);
+}
+
+function optionClean(x){
+  x=tidyLine(x||'').replace(/[.]$/,'');
+  if(!x||x.length<4||x.length>155||isNoiseLine(x))return false;
+  if(looksIncomplete(x))return false;
+  if(/[,:;\-–—]$/.test(x))return false;
+  if(/^(?:this|that|these|those|it|they|can|may|should|must|and|or|but|with|without)\b/i.test(x))return false;
+  return true;
+}
+function sameKindPredicates(facts,rel,exclude){
+  const fam=verbFamily(rel.verb);
+  return uniq(facts.map(x=>relationPair(x.text)).filter(Boolean)
+    .filter(r=>verbFamily(r.verb)===fam && r.subject!==rel.subject)
+    .map(r=>r.predicate).filter(x=>x!==exclude&&optionClean(x)));
+}
+function sameKindDefinitionTerms(facts,exclude){
+  return uniq(facts.map(x=>definitionPair(x.text)?.term).filter(x=>x&&x!==exclude&&optionClean(x)&&x.length<=80));
+}
+function definitionForTerm(facts,term){
+  for(const f of facts){const d=definitionPair(f.text);if(d&&d.term===term)return d.def}
+  return '';
+}
+function relationForSubject(facts,subject,family){
+  for(const f of facts){const r=relationPair(f.text);if(r&&r.subject===subject&&(!family||verbFamily(r.verb)===family))return r}
+  return null;
+}
+function listAssociationForItem(facts,item){
+  for(const f of facts){const items=listItems(f.text);if(items.includes(item))return listSubject(f.text,(relationPair(f.text)?.subject||definitionPair(f.text)?.term||f.section))}
+  return '';
+}
+function conceptBank(facts,exclude=''){
+  const terms=[];
+  for(const f of facts){
+    const d=definitionPair(f.text); if(d&&optionClean(d.term)&&d.term.length<=90)terms.push(d.term);
+    const r=relationPair(f.text); if(r&&optionClean(r.subject)&&r.subject.length<=90)terms.push(r.subject);
+    if(meaningfulSection(f.section)&&optionClean(f.section)&&f.section.length<=90)terms.push(f.section);
+  }
+  return uniq(terms.map(t=>t.replace(/[.:;,-]+$/,'').trim()))
+    .filter(t=>t&&t!==exclude&&!answerLeaksIntoStem(t,exclude));
+}
+function sameKindSubjects(facts,rel,exclude){
+  const fam=verbFamily(rel.verb);
+  return uniq(facts.map(x=>relationPair(x.text)).filter(Boolean)
+    .filter(r=>verbFamily(r.verb)===fam && r.subject!==exclude)
+    .map(r=>r.subject).filter(x=>x!==exclude&&optionClean(x)&&x.length<=90));
+}
+function numericDistractors(correct){
+  const raw=tidyLine(correct);
+  const m=raw.match(/^(\d+(?:\.\d+)?)(?:\s*(?:-|–|to)\s*(\d+(?:\.\d+)?))?\s*(.*)$/i);
+  if(!m)return[];
+  const a=Number(m[1]),b=m[2]!==undefined?Number(m[2]):null,unit=(m[3]||'').trim();
+  const fmt=n=>Number.isInteger(n)?String(Math.round(n)):String(Math.round(n*10)/10);
+  const withUnit=v=>`${v}${unit?` ${unit}`:''}`.replace(/\s+%/,'%').replace(/\s+°/,'°');
+  let vals=[];
+  if(b!==null){
+    const width=Math.max(Math.abs(b-a),1);
+    vals=[
+      [Math.max(0,a-width),Math.max(0,b-width)],
+      [a+width,b+width],
+      [Math.max(0,a-Math.max(2,width/2)),Math.max(0,b-Math.max(2,width/2))],
+      [a+Math.max(2,width/2),b+Math.max(2,width/2)]
+    ].map(([x,y])=>withUnit(`${fmt(x)}-${fmt(y)}`));
+  }else{
+    const delta=Math.max(Math.abs(a)*0.15, a>=10?5:1);
+    vals=[a-delta,a+delta,a-(2*delta),a+(2*delta),a*0.75,a*1.25]
+      .filter(v=>v>0&&Math.abs(v-a)>.0001).map(v=>withUnit(fmt(v)));
+  }
+  return uniq(vals).filter(x=>x!==raw&&optionClean(x)).slice(0,5);
+}
+function clinicalCategory(text){
+  const s=(' '+tidyLine(text||'')+' ').toLowerCase();
+  if(/\b(?:hgb|hemoglobin|hct|hematocrit|platelet|wbc|rbc|sodium|potassium|calcium|glucose|creatinine|bun|inr|ptt|lab|level|range|mg\/dl|meq|mmol|%)\b/.test(s))return 'lab';
+  if(/\b(?:administer|medication|drug|dose|antibiotic|anticoagulant|antibody|insulin|aspirin|therapy|treat|treatment)\b/.test(s))return 'treatment';
+  if(/\b(?:sign|symptom|manifestation|finding|pain|fatigue|fever|bleeding|edema|rash|dyspnea|nausea|vomiting)\b/.test(s))return 'finding';
+  if(/\b(?:screen|diagnos|test|assess|monitor|imaging|biopsy)\b/.test(s))return 'diagnostic';
+  if(/\b(?:risk|cause|causes|etiology|predispos|associated with)\b/.test(s))return 'cause';
+  if(/\b(?:complication|results in|result in|leads to|damage|failure)\b/.test(s))return 'outcome';
+  return 'general';
+}
+function sameCategorySubjects(facts,rel,sourceText,exclude){
+  const fam=verbFamily(rel.verb),cat=clinicalCategory(sourceText+' '+rel.predicate);
+  return uniq(facts.map(x=>({fact:x,rel:relationPair(x.text)})).filter(x=>x.rel)
+    .filter(x=>verbFamily(x.rel.verb)===fam && x.rel.subject!==exclude)
+    .filter(x=>cat==='general'||clinicalCategory(x.fact.text+' '+x.rel.predicate)===cat)
+    .map(x=>x.rel.subject).filter(x=>optionClean(x)&&x.length<=90));
+}
+function questionTopic(q){
+  const safeSection=meaningfulSection(q.section)&&!isExcludedSectionHeading(q.section)&&!q.correct.some(a=>answerLeaksIntoStem(q.section,a));
+  if(safeSection)return q.section;
+  if(q.meta?.mode==='numeric')return 'Lab / clinical values';
+  if(q.meta?.mode==='definition')return 'Key concepts';
+  if(q.meta?.mode==='list'||q.meta?.mode==='list-sata')return q.meta.subject||'Clinical findings';
+  if(q.meta?.mode==='relation')return ({outcome:'Complications & outcomes',description:'Clinical findings',management:'Nursing management',prevention:'Prevention',treatment:'Treatment',effect:'Clinical effects'}[q.meta.family]||'Clinical concepts');
+  return q.kind==='tf'?'Concept review':'Clinical concepts';
+}
+function makeMCQ(f,facts){
+  const pair=definitionPair(f.text),rel=relationPair(f.text),nums=extractNumbers(f.text);let stem='',correct='',distractors=[],meta={};
+  if(pair&&optionClean(pair.term)&&optionClean(pair.def)&&pair.term.length<=80&&pair.def.length>=18){
+    stem=`Which term best matches this description? “${pair.def.replace(/[.]$/,'')}”`;
+    correct=pair.term;
+    distractors=sameKindDefinitionTerms(facts,correct);
+    meta={mode:'definition',definition:pair.def};
+  }
+  if(!stem&&nums.length===1&&isDeclarativeFact(f.text)){
+    correct=nums[0];const context=f.text.replace(correct,'_____').replace(/[.]$/,'');
+    if(!looksIncomplete(context.replace('_____','the value'))){
+      stem=`Which value correctly completes this statement? “${context}”`;distractors=numericDistractors(correct);
+      meta={mode:'numeric',context};
+    }
+  }
+  if(!stem&&rel&&optionClean(rel.subject)&&optionClean(rel.predicate)&&rel.subject.length<=90&&rel.predicate.length>=12){
+    const fam=verbFamily(rel.verb);
+    const lead={outcome:'Which condition is most closely associated with this outcome',description:'Which condition is best described by this finding',management:'Which condition is most closely associated with this intervention or requirement',prevention:'Which condition is most closely associated with this preventive measure',treatment:'Which condition is most closely associated with this treatment',effect:'Which condition is most closely associated with this effect'}[fam]||'Which condition is most closely associated with this statement';
+    stem=`${lead}? “${rel.predicate.replace(/[.]$/,'')}”`;
+    correct=rel.subject;
+    distractors=sameCategorySubjects(facts,rel,f.text,correct);
+    meta={mode:'relation',family:fam,predicate:rel.predicate,verb:rel.verb};
+  }
+  distractors=uniq(distractors.filter(x=>x&&x!==correct&&optionClean(x)&&!answerLeaksIntoStem(stem,x)));
+  if(!stem||!optionClean(correct)||distractors.length<3)return null;
+  if(answerLeaksIntoStem(stem,correct))return null;
+  let opts=[correct,...shuffle(distractors).slice(0,3)];if($('shuffle').value==='yes')opts=shuffle(opts);
+  if(opts.some(x=>!optionClean(x)))return null;
+  return {kind:'mcq',stem,options:opts,correct:[correct],source:f.text,section:f.section,meta};
+}
+function makeListMCQ(f,facts){
+  const items=listItems(f.text).filter(optionClean);if(items.length<2)return null;const correct=shuffle(items)[0];
+  const subject=listSubject(f.text,(relationPair(f.text)?.subject||definitionPair(f.text)?.term||f.section)).replace(/\b(?:include|includes)$/i,'').trim();
+  if(!subject||isNoiseLine(subject)||looksIncomplete(subject+' is identified in the material'))return null;
+  // Only use distractors that themselves belong to another explicit list. This keeps
+  // answer choices in the same semantic category instead of mixing in random facts.
+  const associations={};
+  for(const other of facts){
+    const otherItems=listItems(other.text).filter(optionClean);if(!otherItems.length)continue;
+    const otherSubject=listSubject(other.text,(relationPair(other.text)?.subject||definitionPair(other.text)?.term||other.section)).trim();
+    if(!otherSubject||otherSubject===subject)continue;
+    for(const item of otherItems){if(!items.includes(item)){associations[item]=otherSubject}}
+  }
+  let pool=uniq(Object.keys(associations));if(pool.length<3)return null;
+  let opts=[correct,...shuffle(pool).slice(0,3)];if($('shuffle').value==='yes')opts=shuffle(opts);
+  const stem=`Which finding or item is associated with ${subject}?`;
+  if(answerLeaksIntoStem(stem,correct))return null;
+  return {kind:'mcq',stem,options:opts,correct:[correct],source:f.text,section:f.section,meta:{mode:'list',subject,associations}};
+}
+function similarPredicates(facts,predicate,section){
+  const target=(predicate||'').trim();
+  const pool=[];
+  for(const f of (facts||[])){
+    if(section&&f.section&&f.section!==section) continue;
+    const rel=relationPair(f.text||'');
+    if(!rel) continue;
+    const cand=(rel.predicate||'').trim();
+    if(!cand||cand===target) continue;
+    if(cand.length<8||cand.length>140) continue;
+    if(isNoiseLine(cand)||looksIncomplete(cand)) continue;
+    pool.push(cand);
+  }
+  return uniq(pool);
+}
+
+function makeTF(f,facts){
+  if(!isDeclarativeFact(f.text)||isNoiseLine(f.text))return null;
+  const nums=extractNumbers(f.text),rel=relationPair(f.text);if(!rel&&nums.length!==1)return null;
+  let shown=f.text,answer='True';
+  if(nums.length===1&&Math.random()<.65){const d=numericDistractors(nums[0])[0];if(d){shown=shown.replace(nums[0],d);answer='False'}}
+  else if(rel&&Math.random()<.55){const other=shuffle(similarPredicates(facts,rel.predicate,f.section))[0];if(other){shown=`${rel.subject} ${rel.verb} ${other}.`;answer='False'}}
+  if(isNoiseLine(shown)||looksIncomplete(shown))return null;
+  return {kind:'tf',stem:`True or false: ${shown}`,options:['True','False'],correct:[answer],source:f.text,section:f.section};
+}
+function makeSATA(f,facts){
+  let correct=listItems(f.text).filter(optionClean);
+  if(correct.length<2)return null;
+  const rel=relationPair(f.text),pair=definitionPair(f.text);
+  const subject=(listSubject(f.text,(rel?.subject||pair?.term||f.section))||'').replace(/\b(?:include|includes)$/i,'').trim();
+  if(!subject||isExcludedSectionHeading(subject)||isNoiseLine(subject))return null;
+  const targetCat=clinicalCategory(f.text+' '+subject);
+  const wrong=[];
+  for(const other of facts){
+    if(other.text===f.text||isExcludedSectionHeading(other.section))continue;
+    const oi=listItems(other.text).filter(optionClean);if(!oi.length)continue;
+    const otherSubject=(listSubject(other.text,(relationPair(other.text)?.subject||definitionPair(other.text)?.term||other.section))||'').trim();
+    if(!otherSubject||otherSubject===subject)continue;
+    const otherCat=clinicalCategory(other.text+' '+otherSubject);
+    if(targetCat!=='general'&&otherCat!==targetCat)continue;
+    for(const item of oi)if(!correct.includes(item))wrong.push(item);
+  }
+  const pool=uniq(wrong);if(pool.length<2)return null;
+  correct=shuffle(correct).slice(0,Math.min(4,correct.length));
+  const wrongPicked=shuffle(pool).slice(0,Math.min(3,Math.max(2,6-correct.length)));
+  let opts=uniq([...correct,...wrongPicked]);if(opts.length<4)return null;
+  if($('shuffle').value==='yes')opts=shuffle(opts);
+  return {kind:'sata',stem:`Which findings or items are associated with ${subject}? Select all that apply.`,options:opts,correct,source:f.text,section:f.section,meta:{mode:'list-sata',subject}};
+}
+function hasBadQuizText(text){
+  const s=tidyLine(text);
+  if(!s)return true;
+  // Quiz stems are SUPPOSED to contain question marks, so do not use isNoiseLine() here.
+  // Only reject actual attribution/copyright/web garbage and known extraction corruption.
+  if(/\b(?:unknown author|licensed under|creative commons|copyright|all rights reserved|image by|photo by|illustration by|adapted from|retrieved from|attribution|pixabay|unsplash|shutterstock)\b/i.test(s))return true;
+  if(/(?:https?:\/\/|www\.|\.com\b|\.org\b|\.edu\b)/i.test(s))return true;
+  if(/[©®™]/.test(s))return true;
+  if(/\b(?:undernot|authorlicensed|teachingfatigue|painweight)\b/i.test(s))return true;
+  if(/\b(?:slide|page)\s*\d+\b/i.test(s))return true;
+  if(/\b(?:answer key|quiz answers?|correct answers?|rationale section)\b/i.test(s))return true;
+  return false;
+}
+function questionIsClean(q){
+  if(!q||!q.stem||hasBadQuizText(q.stem))return false;
+  if(q.kind==='tf'&&!hasExplicitSubject(q.stem.replace(/^True or false:\s*/i,'')))return false;
+  if(q.stem.length<24||q.stem.length>300)return false;
+  if(q.kind==='mcq'&&!/\?$/.test(q.stem.trim())&&!/\?\s*[“"]/.test(q.stem))return false;
+  if(q.options.some(o=>!o||o.length<2||o.length>150||hasBadQuizText(o)||(/\?/.test(o)&&q.kind!=='tf')))return false;
+  if(q.correct.some(o=>!q.options.includes(o)))return false;
+  if(q.kind==='mcq'&&q.correct.some(a=>answerLeaksIntoStem(q.stem,a)))return false;
+  if(q.kind==='mcq'&&q.options.filter(o=>o.length>105).length>1)return false;
+  return true;
+}
+function rationaleFor(q){
+  const facts=state.facts||[];
+  const lines=[];
+  if(q.kind==='tf'){
+    if(q.correct[0]==='True'){
+      lines.push(`Why it is correct: The statement matches the source fact: “${q.source}”`);
+    }else{
+      lines.push(`Why it is false: The wording in the question was altered. The source fact is: “${q.source}”`);
+      lines.push('The safest way to answer this type of question is to compare the specific relationship, value, or outcome in the stem with the original fact rather than relying on a familiar keyword.');
+    }
+    return lines.join('\n');
+  }
+  if(q.kind==='sata'){
+    lines.push(`Why the correct selections fit: Each correct option is directly supported by the same topic or list in the uploaded material.`);
+    for(const opt of q.options){
+      if(q.correct.includes(opt))lines.push(`✓ ${opt}: Supported as part of the target group.`);
+      else{
+        const assoc=listAssociationForItem(facts,opt);
+        lines.push(`✗ ${opt}: Not supported for this target${assoc?`; the material associates it with ${assoc} instead`:'. It appears elsewhere in the material, not in the target group'}.`);
+      }
+    }
+    return lines.join('\n');
+  }
+  const correct=q.correct[0];
+  if(q.meta?.mode==='definition'){
+    lines.push(`Why ${correct} is correct: Its definition matches the description in the stem.`);
+    lines.push(`Source support: “${q.source}”`);
+    for(const opt of q.options.filter(o=>o!==correct)){
+      const def=definitionForTerm(facts,opt);
+      lines.push(`Why ${opt} is wrong: ${def?`It is defined as “${def},” which does not match the description being tested.`:'It is a different concept and is not defined by the description in the stem.'}`);
+    }
+  }else if(q.meta?.mode==='relation'){
+    lines.push(`Why ${correct} is correct: The source material directly associates ${correct} with “${q.meta.predicate}.”`);
+    for(const opt of q.options.filter(o=>o!==correct)){
+      const r=relationForSubject(facts,opt,q.meta.family);
+      lines.push(`Why ${opt} is wrong: ${r?`The material instead associates ${opt} with “${r.predicate},” so it does not match the finding/intervention in this question.`:'The material does not support this same relationship for that option.'}`);
+    }
+  }else if(q.meta?.mode==='numeric'){
+    lines.push(`Why ${correct} is correct: It is the value stated in the source fact: “${q.source}”`);
+    for(const opt of q.options.filter(o=>o!==correct))lines.push(`Why ${opt} is wrong: It uses the same kind of measurement but does not match the value or range stated for this concept. Compare both the number and the unit/range before choosing.`);
+  }else if(q.meta?.mode==='list'){
+    lines.push(`Why ${correct} is correct: It is explicitly included with ${q.meta.subject} in the source material.`);
+    for(const opt of q.options.filter(o=>o!==correct)){
+      const assoc=q.meta.associations?.[opt]||listAssociationForItem(facts,opt);
+      lines.push(`Why ${opt} is wrong: ${assoc?`It belongs with ${assoc}, not ${q.meta.subject}.`:`It is not included in the target list for ${q.meta.subject}.`}`);
+    }
+  }else{
+    lines.push(`Why ${correct} is correct: It is directly supported by the source statement: “${q.source}”`);
+    for(const opt of q.options.filter(o=>o!==correct))lines.push(`Why ${opt} is wrong: It does not match the relationship or definition tested in the stem.`);
+  }
+  return lines.join('\n');
+}
+function checkQuestion(qi){
+  const q=state.quiz[qi],box=document.querySelector(`.q[data-q="${qi}"]`);if(!q||!box)return false;
+  const selected=[...box.querySelectorAll('input:checked')].map(i=>q.options[+i.value]);
+  const fb=box.querySelector('.feedback');
+  if(!selected.length){fb.style.display='block';fb.className='feedback incorrect';fb.innerHTML='<strong>Choose an answer first.</strong>';return false}
+  const ok=selected.length===q.correct.length&&selected.every(x=>q.correct.includes(x));
+  fb.style.display='block';fb.className='feedback '+(ok?'correct':'incorrect');
+  fb.innerHTML=`<strong>${ok?'Correct':'Review this one'}</strong><br>Answer: ${q.correct.map(escapeHTML).join('; ')}<div class="rationale"><strong>Rationale:</strong> ${escapeHTML(rationaleFor(q)).replace(/\n/g,'<br>')}</div>`;
+  return ok;
+}
+function makeQuestion(kind,f,facts){
+  if(kind==='sata')return makeSATA(f,facts);
+  if(kind==='tf')return makeTF(f,facts);
+  return makeListMCQ(f,facts)||makeMCQ(f,facts);
+}
+function generateQuiz(){
+  analyze(); if(!state.text){setQuizStatus('Add study material first.','bad');return}
+  let facts=topicFilteredFacts();if(facts.length<3)facts=state.facts.filter(f=>f.score>=2);if(facts.length<3){setQuizStatus('Not enough complete statements were found. Try adding fuller notes or a more text-rich file.','bad');return}
+  const n=Math.max(3,Math.min(50,Number($('count').value)||10));const type=$('type').value;
+  const candidates=[];const seen=new Set();
+  const add=q=>{if(!questionIsClean(q)||seen.has(q.stem))return;seen.add(q.stem);candidates.push(q)};
+  for(const f of shuffle(facts)){
+    if(type==='mcq'||type==='mixed'){add(makeListMCQ(f,facts));add(makeMCQ(f,facts));}
+    if(type==='sata'||type==='mixed')add(makeSATA(f,facts));
+    if(type==='tf'||type==='mixed')add(makeTF(f,facts));
+  }
+  // Requested SATA/TF may be sparse; use strong MCQs as fallback, but never the reverse.
+  if(type!=='mcq'&&candidates.length<n){for(const f of shuffle(facts)){add(makeListMCQ(f,facts));add(makeMCQ(f,facts));}}
+  let qs=shuffle(candidates).slice(0,n);
+  state.quiz=qs;renderQuiz();activateTab('quiz');
+  if(!qs.length){
+    setQuizStatus(type==='mcq'
+      ? 'I could not build a logical multiple-choice question from this material yet. Try using fuller sentences or headings that clearly name the condition/concept. No random questions were forced.'
+      : 'I could not build a clean test from this material. Try adding fuller sentences or switching question type.','bad');
+    return;
+  }
+  if(qs.length<n)setQuizStatus(`Generated ${qs.length} strong questions from ${candidates.length} valid candidates. I skipped weaker material instead of forcing ${n} low-quality questions.`,'good');
+  else setQuizStatus(`Generated ${qs.length} topic-matched questions from complete concepts in your material.`,'good');
+}
+function renderQuiz(){
+  $('quizOut').innerHTML=state.quiz.map((q,qi)=>`<div class="q" data-q="${qi}"><div class="qmeta">Question ${qi+1} · ${escapeHTML(questionTopic(q))} · ${q.kind==='sata'?'Select all that apply':q.kind==='tf'?'True / False':'Multiple choice'}</div><div class="qhead">${qi+1}. ${escapeHTML(q.stem)} ${q.kind==='sata'?'<span class="badge">SATA</span>':''}</div>${q.options.map((o,oi)=>`<label class="option"><input type="${q.kind==='sata'?'checkbox':'radio'}" name="q${qi}" value="${oi}"><span>${escapeHTML(o)}</span></label>`).join('')}<button class="secondary check-answer" type="button" data-check="${qi}">Check answer</button><div class="feedback" style="display:none"></div></div>`).join('');
+  document.querySelectorAll('[data-check]').forEach(b=>b.onclick=()=>checkQuestion(+b.dataset.check));
+  $('grade').style.display=state.quiz.length?'inline-flex':'none';$('resetQuiz').style.display=state.quiz.length?'inline-flex':'none';$('score').innerHTML='';
+}
+function safeGenerateQuiz(){
+  try{
+    setQuizStatus('Building your test…','');
+    generateQuiz();
+  }catch(e){
+    console.error('Quiz generation error:',e);
+    state.quiz=[];
+    activateTab('quiz');
+    const msg=(e&&e.message)?e.message:String(e||'Unknown error');
+    setQuizStatus('Test generator error: '+msg,'bad');
+    $('quizOut').innerHTML='<div class=\"feedback incorrect\" style=\"display:block\"><strong>The test generator hit an error.</strong><br>'+escapeHTML(msg)+'<div class=\"rationale\">Your study material is still safe. Try Generate again; if this repeats, this message tells us exactly what broke.</div></div>';
+    $('grade').style.display='none';
+    $('resetQuiz').style.display='none';
+  }
+}
+$('makeQuiz').addEventListener('click',safeGenerateQuiz);
+$('newVersion').addEventListener('click',safeGenerateQuiz);
+
+$('grade').onclick=()=>{
+  let correctCount=0;
+  state.quiz.forEach((q,qi)=>{if(checkQuestion(qi))correctCount++});
+  const pct=Math.round(correctCount/state.quiz.length*100);$('score').innerHTML=`<div class="score">Score: ${correctCount}/${state.quiz.length} (${pct}%)</div>`;window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+};
+$('resetQuiz').onclick=()=>{document.querySelectorAll('#quizOut input').forEach(i=>i.checked=false);document.querySelectorAll('.feedback').forEach(f=>f.style.display='none');$('score').innerHTML=''};
+
+$('source').addEventListener('input',()=>{state.text=clean($('source').value);renderRaw();if(state.text)setQuizStatus('Material changed. Rebuild the guide or generate a new test.','')});
+$('clear').onclick=()=>{$('source').value='';state.text='';state.sections=[];state.facts=[];state.quiz=[];$('guideOut').innerHTML='<span class="muted">Your generated study guide will appear here.</span>';$('quizOut').innerHTML='<span class="muted">Your generated questions will appear here.</span>';renderRaw();setStatus('No file loaded.');setQuizStatus('Add study material first.');$('grade').style.display='none';$('resetQuiz').style.display='none';$('score').innerHTML=''};
+$('copyText').onclick=async()=>{await navigator.clipboard.writeText(state.text||$('source').value);$('copyText').textContent='Copied!';setTimeout(()=>$('copyText').textContent='Copy text',1200)};
+$('downloadNotes').onclick=()=>{const blob=new Blob([state.text||$('source').value],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='nursing-study-notes.txt';a.click();URL.revokeObjectURL(a.href)};
+</script>
+</body>
+</html>
