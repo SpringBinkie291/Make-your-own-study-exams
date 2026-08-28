@@ -44,7 +44,7 @@
     .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:19px 0 12px;padding:5px;background:rgba(232,237,245,.75);border-radius:14px;width:max-content;max-width:100%}.tab{background:transparent;color:#526174;box-shadow:none;padding:9px 13px}.tab.active{background:#fff;color:var(--brand2);box-shadow:0 4px 12px rgba(39,55,92,.09)}.view{display:none}.view.active{display:block}
     .study-section{border-top:1px solid var(--line);padding:14px 0}.study-section:first-child{border-top:0}.study-section ul{padding-left:20px}.keynum{font-weight:850;color:var(--brand2)}
     .q{border:1px solid #dce4f0;border-radius:17px;padding:18px;margin:14px 0;background:linear-gradient(180deg,#fff,#fcfdff);box-shadow:0 5px 18px rgba(39,55,92,.045)}.qhead{font-weight:820;margin-bottom:12px;line-height:1.45}.qmeta{font-size:.74rem;color:#78869a;margin-bottom:8px;font-weight:750;text-transform:uppercase;letter-spacing:.055em}.option{display:flex;gap:10px;align-items:flex-start;padding:10px 11px;border:1px solid transparent;border-radius:11px;margin:4px 0;transition:.12s}.option:hover{background:#f6f8ff;border-color:#e3e8ff}.option input{margin-top:4px;accent-color:var(--brand)}.feedback{margin-top:11px;padding:11px 12px;border-radius:11px;font-size:.91rem}.correct{background:#ecfdf5;color:var(--good)}.incorrect{background:#fff1f0;color:var(--bad)}.rationale{margin-top:8px;padding-top:8px;border-top:1px solid currentColor;opacity:.94}.check-answer{margin-top:12px;padding:8px 12px;font-size:.84rem;box-shadow:none}
-    .score{font-weight:850;font-size:1.08rem;margin-top:12px}.tiny{font-size:.8rem}.notice{border:1px solid #f5dfaf;background:linear-gradient(90deg,#fffaf0,#fffdf8);padding:12px 14px;border-radius:13px;color:#704312}.footer{margin-top:23px;color:var(--muted);font-size:.82rem}
+    .score{font-weight:850;font-size:1.08rem;margin-top:12px}.tiny{font-size:.8rem}.quote-card{margin-top:16px;padding:17px;border:1px solid #dfe5fb;border-radius:16px;background:linear-gradient(135deg,#f7f8ff,#f0fbfa);position:relative;overflow:hidden}.quote-card:before{content:'“';position:absolute;right:12px;top:-18px;font-size:6rem;line-height:1;color:rgba(83,109,254,.09);font-family:Georgia,serif}.quote-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.11em;font-weight:850;color:var(--brand2);margin-bottom:6px}.quote-text{font-size:1rem;font-weight:760;line-height:1.5;max-width:92%}.quote-note{font-size:.76rem;color:var(--muted);margin-top:7px}.notice{border:1px solid #f5dfaf;background:linear-gradient(90deg,#fffaf0,#fffdf8);padding:12px 14px;border-radius:13px;color:#704312}.footer{margin-top:23px;color:var(--muted);font-size:.82rem}
     details{border:1px solid var(--line);border-radius:13px;padding:10px 12px;margin-top:12px;background:#fbfcfe}summary{cursor:pointer;font-weight:800}code{background:#eef2f6;padding:2px 5px;border-radius:5px}hr{border:0;border-top:1px solid var(--line);margin:20px 0}
   </style>
 </head>
@@ -52,9 +52,9 @@
 <div class="wrap">
   <header>
     <div>
-      <div class="eyebrow">Nursing Study Lab · Local-first study tools</div>
-      <h1>Turn class material into a sharper study session.</h1>
-      <p class="muted">Upload a PDF or PPTX, organize your notes, then generate cleaner practice questions from complete concepts — not random slide fragments.</p>
+      <div class="eyebrow">Nursing Study Lab · Knowledge-bank test engine</div>
+      <h1>Turn any study material into a validated knowledge bank.</h1>
+      <p class="muted">Upload a PDF, PPTX, TXT file, or paste a textbook chapter. The site first builds a structured knowledge bank, then creates questions only from validated facts and same-category answer choices.</p>
       <div class="hero-pills"><span>PDF + PPTX</span><span>Multiple choice</span><span>Select all that apply</span><span>Private in-browser processing</span></div>
     </div>
     <div class="hero-art" aria-hidden="true"><div class="orb"><div class="pulse"></div></div></div>
@@ -97,18 +97,25 @@
       <div id="quizStatus" class="status">Add study material first.</div>
       <details>
         <summary>How question generation works</summary>
-        <p class="muted tiny">V14 works without an AI API key and now rejects subjectless/context-dependent bullets. It filters slide/page labels, copyright/attribution text, URLs, answer-choice fragments, malformed question text, and incomplete statements before anything can become a quiz fact. True/False requires a clean declarative or numeric fact, SATA requires a real list, and MCQ distractors are now restricted to the same answer type/category rather than unrelated facts. Each question includes a check-answer rationale tied to the source statement. It is still rule-based rather than true clinical AI, so verify important clinical content.</p>
+        <p class="muted tiny">V19 uses a knowledge-bank pipeline. Raw text is cleaned, converted into structured facts (definition, lab/value, finding, treatment, complication, cause/risk, diagnostic, prevention, intervention, or explicit list), and validated before question generation. MCQ distractors must come from the same fact category and pass shape/quality checks; SATA requires a coherent explicit list; numeric questions generate same-unit numeric distractors. True/False questions are deliberately balanced between supported facts and carefully altered same-category facts. Weak prose is skipped instead of forced into a question.</p>
       </details>
+      <aside class="quote-card" aria-label="Motivational study quote">
+        <div class="quote-label">Study boost</div>
+        <div id="motivationQuote" class="quote-text">Keep showing up. The knowledge builds one question at a time.</div>
+        <div class="quote-note">A fresh quote appears each time you open the study lab.</div>
+      </aside>
     </section>
   </div>
 
   <div class="tabs">
     <button class="tab active" data-tab="guide">Study guide</button>
+    <button class="tab" data-tab="bank">Knowledge bank</button>
     <button class="tab" data-tab="quiz">Practice test</button>
     <button class="tab" data-tab="raw">Clean text</button>
   </div>
 
   <section id="guide" class="panel view active"><h2>Study guide</h2><div id="guideOut" class="muted">Your generated study guide will appear here.</div></section>
+  <section id="bank" class="panel view"><h2>Knowledge bank</h2><p class="muted">These are the structured facts the test generator is allowed to use. If something looks wrong here, it will not be trusted as a question source.</p><div id="bankSummary" class="status">Build the study guide to analyze your material.</div><div id="bankOut"></div></section>
   <section id="quiz" class="panel view"><h2>Practice test</h2><div id="quizOut" class="muted">Your generated questions will appear here.</div><div class="actions"><button id="grade" type="button" style="display:none">Grade test</button><button id="resetQuiz" type="button" class="secondary" style="display:none">Reset answers</button></div><div id="score"></div></section>
   <section id="raw" class="panel view"><h2>Clean text</h2><div class="actions"><button id="copyText" class="secondary">Copy text</button><button id="downloadNotes" class="secondary">Download .txt</button></div><pre id="rawOut" style="white-space:pre-wrap;word-wrap:break-word;font:inherit"></pre></section>
 
@@ -121,11 +128,29 @@
 if(window.pdfjsLib){pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';}
 
 const $=id=>document.getElementById(id);
-const state={text:'',sections:[],facts:[],quiz:[],seed:Date.now()};
+const state={text:'',sections:[],facts:[],knowledge:[],rejected:[],quiz:[],seed:Date.now()};
 const escapeHTML=s=>s.replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 const clean=s=>s.replace(/\u0000/g,' ').replace(/[ \t]+/g,' ').replace(/\n{3,}/g,'\n\n').trim();
 const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const uniq=a=>[...new Set(a.map(x=>x.trim()).filter(Boolean))];
+const motivationalQuotes=[
+  'Keep showing up. The knowledge builds one question at a time.',
+  'You do not need to know everything today; you need to understand a little more than yesterday.',
+  'Every concept you master now is one less thing to fear on exam day.',
+  'Study for the nurse you are becoming, not just the test in front of you.',
+  'Consistency turns difficult material into familiar material.',
+  'A missed question is not wasted effort when you understand the rationale afterward.',
+  'Small review sessions add up to strong clinical judgment.',
+  'Focus on understanding the why, and the answers become easier to recognize.',
+  'Progress can feel slow while it is happening and obvious once you look back.',
+  'One chapter, one concept, one question at a time.',
+  'Your future patients benefit from the work you are putting in today.',
+  'Strong nursing knowledge is built through repetition, reflection, and curiosity.'
+];
+function showMotivationalQuote(){
+  const el=$('motivationQuote');
+  if(el)el.textContent=motivationalQuotes[Math.floor(Math.random()*motivationalQuotes.length)];
+}
 
 function setStatus(msg,kind=''){$('status').className='status '+kind;$('status').textContent=msg}
 function setQuizStatus(msg,kind=''){$('quizStatus').className='status '+kind;$('quizStatus').textContent=msg}
@@ -291,7 +316,7 @@ function renderRaw(){$('rawOut').textContent=state.text}
 
 function highlightNumbers(s){return escapeHTML(s).replace(/\b(\d+(?:\.\d+)?(?:\s*(?:-|–|to)\s*\d+(?:\.\d+)?)?\s*(?:mg|mcg|g|mL|L|mmHg|bpm|%|mEq|mmol|mg\/dL|mL\/hr|hours?|mins?|minutes?|days?|weeks?|°[CF])?)\b/gi,'<span class="keynum">$1</span>')}
 function buildGuide(){
-  analyze();renderRaw(); if(!state.text){$('guideOut').innerHTML='<p class="muted">Add study material first.</p>';return}
+  analyze();buildKnowledgeBank();renderKnowledgeBank();renderRaw(); if(!state.text){$('guideOut').innerHTML='<p class="muted">Add study material first.</p>';return}
   let html='';
   for(const s of state.sections){
     const items=s.items.filter(x=>factScore(x)>=0).slice(0,18); if(!items.length)continue;
@@ -592,6 +617,18 @@ function questionIsClean(q){
 function rationaleFor(q){
   const facts=state.facts||[];
   const lines=[];
+  const k=q.meta?.knowledgeId?(state.knowledge||[]).find(x=>x.id===q.meta.knowledgeId):null;
+  if(k){
+    const correct=q.correct.join('; ');
+    lines.push(`Why the answer is correct: ${k.source}`);
+    for(const opt of q.options.filter(o=>!q.correct.includes(o))){
+      const assoc=(state.knowledge||[]).find(x=>x.subject===opt||x.object===opt||(x.items||[]).includes(opt));
+      if(assoc)lines.push(`Why ${opt} is not the best answer: The knowledge bank associates it with ${assoc.subject}${assoc.object?` (${assoc.object})`:''}, not with the relationship being tested here.`);
+      else if(k.type==='numeric')lines.push(`Why ${opt} is wrong: It has the same measurement format, but it does not match the value stated for ${k.subject}.`);
+      else lines.push(`Why ${opt} is wrong: It is not supported by the validated fact for ${k.subject} in the uploaded material.`);
+    }
+    return lines.join('\n');
+  }
   if(q.kind==='tf'){
     if(q.correct[0]==='True'){
       lines.push(`Why it is correct: The statement matches the source fact: “${q.source}”`);
@@ -651,35 +688,199 @@ function checkQuestion(qi){
   fb.innerHTML=`<strong>${ok?'Correct':'Review this one'}</strong><br>Answer: ${q.correct.map(escapeHTML).join('; ')}<div class="rationale"><strong>Rationale:</strong> ${escapeHTML(rationaleFor(q)).replace(/\n/g,'<br>')}</div>`;
   return ok;
 }
-function makeQuestion(kind,f,facts){
-  if(kind==='sata')return makeSATA(f,facts);
-  if(kind==='tf')return makeTF(f,facts);
-  return makeListMCQ(f,facts)||makeMCQ(f,facts);
+function cleanConceptName(x){
+  let s=tidyLine(String(x||'')).replace(/[.:;,]+$/,'').replace(/^(?:the\s+)?(?:following|one of|one important|one major)\s+/i,'').trim();
+  const words=s.split(/\s+/).filter(Boolean);
+  if(s.length<2||s.length>72||words.length>9)return '';
+  if(/^(?:this|that|these|those|it|they|he|she|we|you|generally|usually|often|sometimes|task|example|answer|question|chapter|section|figure|table)\b/i.test(s))return '';
+  if(/\b(?:according to|in your notes|based on|answer key|rationale|learning objective|unknown author|licensed under)\b/i.test(s))return '';
+  if(/[?!]/.test(s)||/^[a-z]\.$/i.test(s))return '';
+  return s;
 }
+function factCategory(text,rel){
+  const s=(text+' '+(rel?.verb||'')+' '+(rel?.predicate||'')).toLowerCase();
+  if(/\b(normal|range|level|value|hematocrit|hemoglobin|platelet|wbc|sodium|potassium|glucose|inr|ptt|creatinine|bun|mg\/dl|mmol|meq|mmhg|bpm|%)\b/.test(s)&&extractNumbers(text).length)return 'lab/value';
+  if(/\b(signs?|symptoms?|manifestations?|findings?|characterized by|presents? with)\b/.test(s))return 'finding';
+  if(/\b(complications?|causes?|results? in|leads? to|adverse effects?|side effects?|toxicity)\b/.test(s))return 'complication';
+  if(/\b(treat(?:ed|ment)?|therapy|administer|medication|antidote|managed with)\b/.test(s))return 'treatment';
+  if(/\b(interventions?|nursing care|priority|monitor|assess|teach|teaching|education|position|encourage)\b/.test(s))return 'intervention';
+  if(/\b(diagnos(?:e|ed|is|tic)|screen(?:ing)?|test|confirmed by)\b/.test(s))return 'diagnostic';
+  if(/\b(prevent|prophylaxis|reduce(?:s)? risk|avoid)\b/.test(s))return 'prevention';
+  if(/\b(risk factors?|caused by|etiology|due to|associated with increased risk)\b/.test(s))return 'cause/risk';
+  return 'relationship';
+}
+function knowledgeFromFact(f,idx){
+  const text=tidyLine(f.text); if(!isDeclarativeFact(text)||isNoiseLine(text))return null;
+  const nums=extractNumbers(text);
+  const li=listItems(text).map(tidyLine).filter(optionClean);
+  if(li.length>=2){
+    let subj=cleanConceptName(listSubject(text, relationPair(text)?.subject||definitionPair(text)?.term||f.section));
+    if(subj){
+      const cat=factCategory(text,relationPair(text));
+      return {id:'k'+idx,type:'list',category:cat,topic:f.section,subject:subj,items:uniq(li),source:text,score:f.score};
+    }
+  }
+  const dp=definitionPair(text);
+  if(dp){
+    const subject=cleanConceptName(dp.term), object=tidyLine(dp.def);
+    if(subject&&object.length>=15&&object.length<=190&&!looksIncomplete(object+'.'))return {id:'k'+idx,type:'definition',category:'definition',topic:f.section,subject,object,source:text,score:f.score};
+  }
+  const rel=relationPair(text);
+  if(rel){
+    const subject=cleanConceptName(rel.subject), object=tidyLine(rel.predicate);
+    if(subject&&object.length>=10&&object.length<=180&&!isNoiseLine(object)&&!looksIncomplete(subject+' '+rel.verb+' '+object+'.')){
+      const cat=factCategory(text,rel);
+      return {id:'k'+idx,type:nums.length===1&&cat==='lab/value'?'numeric':'relation',category:cat,topic:f.section,subject,object,verb:rel.verb,value:nums.length===1?nums[0]:null,source:text,score:f.score};
+    }
+  }
+  return null;
+}
+function buildKnowledgeBank(){
+  const accepted=[],rejected=[];
+  (state.facts||[]).forEach((f,i)=>{const k=knowledgeFromFact(f,i); if(k)accepted.push(k); else rejected.push({text:f.text,section:f.section,reason:'No complete, testable relationship could be identified.'})});
+  const seen=new Set();
+  state.knowledge=accepted.filter(k=>{const key=[k.type,k.category,k.subject,k.object||'',(k.items||[]).join('|')].join('::').toLowerCase();if(seen.has(key))return false;seen.add(key);return true});
+  state.rejected=rejected;
+  return state.knowledge;
+}
+function safeTopicLabel(k){
+  const sec=meaningfulSection(k.topic)?tidyLine(k.topic):'';
+  const exact=cleanConceptName(k.subject);
+  if(k.category==='lab/value')return 'Labs & values';
+  if(k.category==='definition')return sec&&sec.length<=34?sec:'Key concepts';
+  if(/answer|rationale|quiz|question/i.test(sec))return ({finding:'Clinical findings',treatment:'Treatment',intervention:'Nursing interventions',complication:'Complications',diagnostic:'Diagnostics','cause/risk':'Risk factors',prevention:'Prevention'}[k.category]||'Concept review');
+  return sec&&sec.length<=42?sec:({finding:'Clinical findings',treatment:'Treatment',intervention:'Nursing interventions',complication:'Complications',diagnostic:'Diagnostics','cause/risk':'Risk factors',prevention:'Prevention'}[k.category]||'Concept review');
+}
+function renderKnowledgeBank(){
+  const ks=state.knowledge||[];
+  const cats={};ks.forEach(k=>(cats[k.category]||(cats[k.category]=[])).push(k));
+  const mcq=buildCandidateBank('mcq',false).length, sata=buildCandidateBank('sata',false).length, tf=buildCandidateBank('tf',false).length;
+  $('bankSummary').className='status '+(ks.length?'good':'bad');
+  $('bankSummary').textContent=ks.length?`${ks.length} validated facts · ${mcq} MCQ candidates · ${sata} SATA candidates · ${tf} True/False candidates · ${state.rejected.length} weak facts skipped`:'No validated facts yet. Try fuller sentences, explicit lists, definitions, or values.';
+  $('bankOut').innerHTML=Object.entries(cats).map(([cat,items])=>`<div class="study-section"><h3>${escapeHTML(cat.replace(/\b\w/g,m=>m.toUpperCase()))} <span class="badge">${items.length}</span></h3><ul>${items.slice(0,40).map(k=>`<li><strong>${escapeHTML(k.subject)}</strong>${k.type==='list'?`: ${escapeHTML(k.items.join('; '))}`:k.value?`: ${escapeHTML(k.value)} — ${escapeHTML(k.object)}`:` → ${escapeHTML(k.object||'')}`}<div class="muted tiny">${escapeHTML(safeTopicLabel(k))}</div></li>`).join('')}</ul></div>`).join('') || '<p class="muted">No validated facts yet.</p>';
+}
+function sameCategoryKnowledge(k,category,type=null){return (state.knowledge||[]).filter(x=>x.id!==k.id&&x.category===category&&(!type||x.type===type))}
+function conceptChoices(k){return uniq(sameCategoryKnowledge(k,k.category).map(x=>cleanConceptName(x.subject)).filter(Boolean).filter(x=>x.toLowerCase()!==k.subject.toLowerCase()))}
+function predicateChoices(k){
+  const own=(k.object||'').length;
+  return uniq(sameCategoryKnowledge(k,k.category).map(x=>x.object).filter(optionClean).filter(x=>x&&x!==k.object&&Math.abs(x.length-own)<=Math.max(45,own*.65)));
+}
+function optionShape(opts){
+  if(opts.length<4)return false;const lens=opts.map(x=>x.split(/\s+/).length);const max=Math.max(...lens),min=Math.min(...lens);
+  return max<=Math.max(18,min*4)&&new Set(opts.map(x=>x.toLowerCase())).size===opts.length;
+}
+function makeKnowledgeMCQs(k){
+  const out=[];
+  if(k.type==='numeric'&&k.value){
+    const ds=numericDistractors(k.value).filter(x=>x!==k.value);if(ds.length>=3){
+      let stem=`Which value is associated with ${k.subject}?`;
+      let opts=[k.value,...ds.slice(0,3)];if($('shuffle').value==='yes')opts=shuffle(opts);
+      out.push({kind:'mcq',stem,options:opts,correct:[k.value],source:k.source,section:safeTopicLabel(k),meta:{mode:'kb-numeric',knowledgeId:k.id,category:k.category,subject:k.subject}});
+    }
+  } else if(k.type==='definition'){
+    const ds=conceptChoices(k);if(ds.length>=3){let opts=[k.subject,...shuffle(ds).slice(0,3)];if($('shuffle').value==='yes')opts=shuffle(opts);out.push({kind:'mcq',stem:`Which concept best matches this definition? “${k.object.replace(/[.]$/,'')}”`,options:opts,correct:[k.subject],source:k.source,section:safeTopicLabel(k),meta:{mode:'kb-definition',knowledgeId:k.id,category:k.category,subject:k.subject}})}
+  } else if(k.type==='relation'){
+    const ds=conceptChoices(k);if(ds.length>=3){let opts=[k.subject,...shuffle(ds).slice(0,3)];if($('shuffle').value==='yes')opts=shuffle(opts);const labels={finding:'Which condition or concept is associated with this clinical finding',treatment:'Which condition or concept is associated with this treatment',intervention:'Which condition or concept is associated with this nursing intervention',complication:'Which condition or concept is associated with this complication or outcome',diagnostic:'Which condition or concept is associated with this diagnostic approach','cause/risk':'Which condition or concept is associated with this cause or risk factor',prevention:'Which condition or concept is associated with this preventive measure',relationship:'Which concept is associated with this statement'};out.push({kind:'mcq',stem:`${labels[k.category]||labels.relationship}? “${k.object.replace(/[.]$/,'')}”`,options:opts,correct:[k.subject],source:k.source,section:safeTopicLabel(k),meta:{mode:'kb-relation',knowledgeId:k.id,category:k.category,subject:k.subject}})}
+    const pd=predicateChoices(k);if(pd.length>=3&&k.object.length<=120){let opts=[k.object,...shuffle(pd).slice(0,3)];if(optionShape(opts)){if($('shuffle').value==='yes')opts=shuffle(opts);out.push({kind:'mcq',stem:`Which statement is correctly associated with ${k.subject}?`,options:opts,correct:[k.object],source:k.source,section:safeTopicLabel(k),meta:{mode:'kb-reverse',knowledgeId:k.id,category:k.category,subject:k.subject}})}}
+  } else if(k.type==='list'){
+    const peers=sameCategoryKnowledge(k,k.category,'list');const pool=uniq(peers.flatMap(x=>x.items||[]).filter(optionClean).filter(x=>!k.items.includes(x)));
+    for(const correct of shuffle(k.items).slice(0,3)){if(pool.length>=3){let opts=[correct,...shuffle(pool).slice(0,3)];if(optionShape(opts)){if($('shuffle').value==='yes')opts=shuffle(opts);out.push({kind:'mcq',stem:`Which item is associated with ${k.subject}?`,options:opts,correct:[correct],source:k.source,section:safeTopicLabel(k),meta:{mode:'kb-list',knowledgeId:k.id,category:k.category,subject:k.subject}})}}}
+  }
+  return out.filter(questionIsClean);
+}
+function makeKnowledgeSATA(k){
+  if(k.type!=='list'||k.items.length<2)return null;
+  const peers=sameCategoryKnowledge(k,k.category,'list');const wrong=uniq(peers.flatMap(x=>x.items||[]).filter(optionClean).filter(x=>!k.items.includes(x)));
+  if(wrong.length<2)return null;
+  const correct=shuffle(k.items).slice(0,Math.min(4,k.items.length));let opts=[...correct,...shuffle(wrong).slice(0,Math.min(3,Math.max(2,6-correct.length)))];opts=uniq(opts);if(opts.length<4)return null;if($('shuffle').value==='yes')opts=shuffle(opts);
+  return {kind:'sata',stem:`Which items are associated with ${k.subject}? Select all that apply.`,options:opts,correct,source:k.source,section:safeTopicLabel(k),meta:{mode:'kb-sata',knowledgeId:k.id,category:k.category,subject:k.subject}};
+}
+function makeKnowledgeTF(k){
+  const out=[];
+  const baseMeta={mode:'kb-tf',knowledgeId:k.id,category:k.category,subject:k.subject};
+  const push=(statement,answer,mutation='none')=>{
+    const text=tidyLine(statement).replace(/[.]+$/,'')+'.';
+    const q={kind:'tf',stem:`True or false: ${text}`,options:['True','False'],correct:[answer],source:k.source,section:safeTopicLabel(k),meta:{...baseMeta,mutation}};
+    if(questionIsClean(q))out.push(q);
+  };
+
+  // Always create a clean TRUE statement from the structured fact rather than raw prose.
+  if(k.type==='numeric'&&k.value){
+    push(`${k.subject} is ${k.value}`,'True','numeric-true');
+    const wrong=numericDistractors(k.value)[0];
+    if(wrong)push(`${k.subject} is ${wrong}`,'False','numeric-value');
+  }else if(k.type==='definition'){
+    push(`${k.subject} is defined as ${k.object}`,'True','definition-true');
+    const wrongTerms=conceptChoices(k);
+    if(wrongTerms.length)push(`${shuffle(wrongTerms)[0]} is defined as ${k.object}`,'False','definition-subject');
+  }else if(k.type==='relation'){
+    push(`${k.subject} ${k.verb||'is associated with'} ${k.object}`,'True','relation-true');
+    // Prefer changing the predicate while keeping the subject. This preserves grammar and category.
+    const wrongPredicates=predicateChoices(k);
+    if(wrongPredicates.length){
+      push(`${k.subject} ${k.verb||'is associated with'} ${shuffle(wrongPredicates)[0]}`,'False','relation-predicate');
+    }else{
+      // If compatible predicates are unavailable, swap only the subject with a validated same-category concept.
+      const wrongSubjects=conceptChoices(k);
+      if(wrongSubjects.length)push(`${shuffle(wrongSubjects)[0]} ${k.verb||'is associated with'} ${k.object}`,'False','relation-subject');
+    }
+  }
+  return out;
+}
+function questionQuality(q){
+  if(!questionIsClean(q))return -99;let score=5;
+  if(q.kind==='mcq'){if(optionShape(q.options))score+=3;else score-=4;if(q.correct.some(a=>answerLeaksIntoStem(q.stem,a)))score-=8;}
+  if(q.meta?.category&&q.meta.category!=='relationship')score+=2;
+  if(q.source&&q.source.length>=30&&q.source.length<=220)score+=1;
+  return score;
+}
+function buildCandidateBank(type='mixed',applyFilter=true){
+  let ks=state.knowledge||[];const topic=applyFilter?$('customFocus').value.trim().toLowerCase():'';const focus=applyFilter?$('focus').value:'all';
+  if(topic)ks=ks.filter(k=>[k.topic,k.subject,k.object,(k.items||[]).join(' ')].join(' ').toLowerCase().includes(topic));
+  if(focus==='numbers')ks=ks.filter(k=>k.type==='numeric');if(focus==='terms')ks=ks.filter(k=>k.type==='definition');
+  const out=[];for(const k of ks){if(type==='mcq'||type==='mixed')out.push(...makeKnowledgeMCQs(k));if(type==='sata'||type==='mixed'){const q=makeKnowledgeSATA(k);if(q)out.push(q)}if(type==='tf'||type==='mixed'){out.push(...makeKnowledgeTF(k))}}
+  const seen=new Set();return out.filter(q=>questionQuality(q)>=7).filter(q=>{const key=(q.kind+'|'+q.stem+'|'+q.options.join('|')).toLowerCase();if(seen.has(key))return false;seen.add(key);return true});
+}
+function chooseValidatedQuestions(scored,n,type){
+  if(!scored.length)return[];
+  const topScore=scored[0].score;
+  const strong=scored.filter(x=>x.score>=topScore-2).map(x=>x.q);
+  if(type==='tf'){
+    const trues=shuffle(strong.filter(q=>q.kind==='tf'&&q.correct[0]==='True'));
+    const falses=shuffle(strong.filter(q=>q.kind==='tf'&&q.correct[0]==='False'));
+    const falseTarget=Math.min(falses.length,Math.floor(n/2));
+    const trueTarget=Math.min(trues.length,n-falseTarget);
+    let chosen=[...falses.slice(0,falseTarget),...trues.slice(0,trueTarget)];
+    const used=new Set(chosen.map(q=>q.stem));
+    const leftovers=shuffle(strong.filter(q=>!used.has(q.stem)));
+    chosen.push(...leftovers.slice(0,Math.max(0,n-chosen.length)));
+    return shuffle(chosen).slice(0,n);
+  }
+  let chosen=shuffle(strong).slice(0,n);
+  // In a mixed test, avoid an accidental all-TRUE T/F subset whenever a false candidate exists.
+  const selectedTF=chosen.filter(q=>q.kind==='tf');
+  if(selectedTF.length>=2&&!selectedTF.some(q=>q.correct[0]==='False')){
+    const falseCandidate=shuffle(strong.filter(q=>q.kind==='tf'&&q.correct[0]==='False'&&!chosen.includes(q)))[0];
+    if(falseCandidate){
+      const replaceAt=chosen.findIndex(q=>q.kind==='tf'&&q.correct[0]==='True');
+      if(replaceAt>=0)chosen[replaceAt]=falseCandidate;
+    }
+  }
+  return chosen;
+}
+
 function generateQuiz(){
-  analyze(); if(!state.text){setQuizStatus('Add study material first.','bad');return}
-  let facts=topicFilteredFacts();if(facts.length<3)facts=state.facts.filter(f=>f.score>=2);if(facts.length<3){setQuizStatus('Not enough complete statements were found. Try adding fuller notes or a more text-rich file.','bad');return}
-  const n=Math.max(3,Math.min(50,Number($('count').value)||10));const type=$('type').value;
-  const candidates=[];const seen=new Set();
-  const add=q=>{if(!questionIsClean(q)||seen.has(q.stem))return;seen.add(q.stem);candidates.push(q)};
-  for(const f of shuffle(facts)){
-    if(type==='mcq'||type==='mixed'){add(makeListMCQ(f,facts));add(makeMCQ(f,facts));}
-    if(type==='sata'||type==='mixed')add(makeSATA(f,facts));
-    if(type==='tf'||type==='mixed')add(makeTF(f,facts));
-  }
-  // Requested SATA/TF may be sparse; use strong MCQs as fallback, but never the reverse.
-  if(type!=='mcq'&&candidates.length<n){for(const f of shuffle(facts)){add(makeListMCQ(f,facts));add(makeMCQ(f,facts));}}
-  let qs=shuffle(candidates).slice(0,n);
-  state.quiz=qs;renderQuiz();activateTab('quiz');
-  if(!qs.length){
-    setQuizStatus(type==='mcq'
-      ? 'I could not build a logical multiple-choice question from this material yet. Try using fuller sentences or headings that clearly name the condition/concept. No random questions were forced.'
-      : 'I could not build a clean test from this material. Try adding fuller sentences or switching question type.','bad');
-    return;
-  }
-  if(qs.length<n)setQuizStatus(`Generated ${qs.length} strong questions from ${candidates.length} valid candidates. I skipped weaker material instead of forcing ${n} low-quality questions.`,'good');
-  else setQuizStatus(`Generated ${qs.length} topic-matched questions from complete concepts in your material.`,'good');
+  analyze();buildKnowledgeBank();renderKnowledgeBank(); if(!state.text){setQuizStatus('Add study material first.','bad');return}
+  const n=Math.max(3,Math.min(50,Number($('count').value)||10)),type=$('type').value;
+  let candidates=buildCandidateBank(type,true);
+  if(!candidates.length){state.quiz=[];renderQuiz();activateTab('bank');setQuizStatus('No validated questions could be built from the current knowledge bank. Open Knowledge bank to see what the parser accepted. Add clearer definitions, values, relationships, or explicit lists rather than forcing random questions.','bad');return}
+  // Randomize within quality tiers so repeated tests vary without lowering standards.
+  const scored=candidates.map(q=>({q,score:questionQuality(q),r:Math.random()})).sort((a,b)=>b.score-a.score||a.r-b.r);
+  const chosen=chooseValidatedQuestions(scored,n,type);
+  state.quiz=chosen;renderQuiz();activateTab('quiz');
+  setQuizStatus(chosen.length<n?`Generated ${chosen.length} validated questions from ${candidates.length} strong candidates. The generator skipped material that could not support competent same-category answer choices.`:`Generated ${chosen.length} validated questions from a bank of ${candidates.length} strong candidates. Generate again for a new randomized version.`,'good');
 }
+function makeQuestion(){return null}
 function renderQuiz(){
   $('quizOut').innerHTML=state.quiz.map((q,qi)=>`<div class="q" data-q="${qi}"><div class="qmeta">Question ${qi+1} · ${escapeHTML(questionTopic(q))} · ${q.kind==='sata'?'Select all that apply':q.kind==='tf'?'True / False':'Multiple choice'}</div><div class="qhead">${qi+1}. ${escapeHTML(q.stem)} ${q.kind==='sata'?'<span class="badge">SATA</span>':''}</div>${q.options.map((o,oi)=>`<label class="option"><input type="${q.kind==='sata'?'checkbox':'radio'}" name="q${qi}" value="${oi}"><span>${escapeHTML(o)}</span></label>`).join('')}<button class="secondary check-answer" type="button" data-check="${qi}">Check answer</button><div class="feedback" style="display:none"></div></div>`).join('');
   document.querySelectorAll('[data-check]').forEach(b=>b.onclick=()=>checkQuestion(+b.dataset.check));
@@ -711,9 +912,10 @@ $('grade').onclick=()=>{
 $('resetQuiz').onclick=()=>{document.querySelectorAll('#quizOut input').forEach(i=>i.checked=false);document.querySelectorAll('.feedback').forEach(f=>f.style.display='none');$('score').innerHTML=''};
 
 $('source').addEventListener('input',()=>{state.text=clean($('source').value);renderRaw();if(state.text)setQuizStatus('Material changed. Rebuild the guide or generate a new test.','')});
-$('clear').onclick=()=>{$('source').value='';state.text='';state.sections=[];state.facts=[];state.quiz=[];$('guideOut').innerHTML='<span class="muted">Your generated study guide will appear here.</span>';$('quizOut').innerHTML='<span class="muted">Your generated questions will appear here.</span>';renderRaw();setStatus('No file loaded.');setQuizStatus('Add study material first.');$('grade').style.display='none';$('resetQuiz').style.display='none';$('score').innerHTML=''};
+$('clear').onclick=()=>{$('source').value='';state.text='';state.sections=[];state.facts=[];state.knowledge=[];state.rejected=[];state.quiz=[];$('guideOut').innerHTML='<span class="muted">Your generated study guide will appear here.</span>';$('quizOut').innerHTML='<span class="muted">Your generated questions will appear here.</span>';$('bankOut').innerHTML='';$('bankSummary').textContent='Build the study guide to analyze your material.';renderRaw();setStatus('No file loaded.');setQuizStatus('Add study material first.');$('grade').style.display='none';$('resetQuiz').style.display='none';$('score').innerHTML=''};
 $('copyText').onclick=async()=>{await navigator.clipboard.writeText(state.text||$('source').value);$('copyText').textContent='Copied!';setTimeout(()=>$('copyText').textContent='Copy text',1200)};
 $('downloadNotes').onclick=()=>{const blob=new Blob([state.text||$('source').value],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='nursing-study-notes.txt';a.click();URL.revokeObjectURL(a.href)};
+showMotivationalQuote();
 </script>
 </body>
 </html>
